@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { randomUUID } from 'crypto';
+import { TRPCError } from "@trpc/server";
 
 
 export const taskSchema = z.object({
@@ -36,21 +37,28 @@ class TaskService {
   };
 
   public async createTask (input: TaskParams): Promise<Task> {
-    return await this.tasks.push({
+    const findDuplicate = this.tasks.find((task: Task) => task.titulo === input.titulo)
+    if (findDuplicate) throw new TRPCError({ code: 'NOT_FOUND', message: `A task with title ${input.titulo} already exists.`})
+
+    const task = {
       id: randomUUID(),
       titulo: input.titulo,
       descricao: input.descricao,
       dataCriacao: new Date().toISOString()
-    })
+    }
+
+    this.tasks.push(task)
+    return task
   };
 
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
-    const mappedTask = this.tasks.find((task: Task) => task.id === id);
-    if (!mappedTask) {
+    const index = this.tasks.findIndex((task: Task) => task.id === id);
+    if (!index) {
       throw new Error(`Task ${id} not found.`)
     }
 
-    return {
+    const mappedTask = this.tasks[index];
+    return this.tasks[index] = {
       ...mappedTask,
       titulo: input.titulo ?? mappedTask.titulo,
       descricao: input.descricao ?? mappedTask.descricao,
