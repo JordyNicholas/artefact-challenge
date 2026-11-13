@@ -34,7 +34,7 @@ class TaskService {
   };
 
   public async createTask (input: TaskParams): Promise<Task> {
-    const findDuplicate = this.tasks.find((task: Task) => task.titulo === input.titulo)
+    const findDuplicate = this.tasks.find((task: Task) => task.titulo.toLowerCase() === input.titulo.toLowerCase())
     if (findDuplicate) throw new TRPCError({ code: 'CONFLICT', message: `A task with title ${input.titulo} already exists.`})
 
     const task = {
@@ -51,8 +51,9 @@ class TaskService {
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
     const index = this.tasks.findIndex((task: Task) => task.id === id);
     if (index === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
-
     const mappedTask = this.tasks[index];
+
+    if (mappedTask.titulo.toLowerCase() === input.titulo.toLowerCase()) throw new TRPCError({ code: 'CONFLICT', message: `A Task with title ${input.titulo} already exists.` })
     return this.tasks[index] = {
       ...mappedTask,
       titulo: input.titulo,
