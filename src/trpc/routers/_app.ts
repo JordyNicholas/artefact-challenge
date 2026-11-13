@@ -3,18 +3,24 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { z } from "zod";
 
 
-const appRouter = createTRPCRouter({
+export const appRouter = createTRPCRouter({
   task: createTRPCRouter({
     list: baseProcedure.query(() => taskService.listTasks()),
     getById: baseProcedure
       .input(z.object({ id: z.uuid() }))
-      .query(() => taskService.getTask),
+      .query(({ input }) => taskService.getTask(input.id)),
     create: baseProcedure
       .input(taskParams)
-      .mutation(() => taskService.createTask),
-    update: baseProcedure.mutation(() => taskService.updateTask),
+      .mutation(({ input }) => taskService.createTask(input)),
+    update: baseProcedure
+      .input(taskParams.extend({ id: z.uuid }))
+      .mutation(({ input }) => {
+        const { id, ...data } = input
+        return taskService.updateTask(id as string, data)
+      }),
     delete: baseProcedure
       .input(z.object({ id: z.uuid() }))
       .mutation(() => taskService.deleteTask)
   })
 })
+export type AppRouter = typeof appRouter
