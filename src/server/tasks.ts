@@ -25,15 +25,12 @@ class TaskService {
 
   public async getTask (id: string): Promise<Task> {
     const mappedTask = await this.tasks.find((task: Task) => task.id === id);
-    if (!mappedTask) {
-      throw new Error(`Task ${id} not found.`)
-    }
-
+    if (!mappedTask) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
     return mappedTask;
   };
 
   public async listTasks (): Promise<Task[]> {
-    return await this.tasks;
+    return this.tasks;
   };
 
   public async createTask (input: TaskParams): Promise<Task> {
@@ -53,9 +50,7 @@ class TaskService {
 
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
     const index = this.tasks.findIndex((task: Task) => task.id === id);
-    if (!index) {
-      throw new Error(`Task ${id} not found.`)
-    }
+    if (!index) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
 
     const mappedTask = this.tasks[index];
     return this.tasks[index] = {
@@ -67,12 +62,8 @@ class TaskService {
   };
 
   public async deleteTask (id: string): Promise<void> {
-    const mappedTask = this.tasks.find((task: Task) => task.id === id);
-    if (!mappedTask) {
-      throw new Error(`Task ${id} not found.`)
-    }
-
     const findIndex = this.tasks.findIndex((task: Task) => task.id === id)
+    if (!findIndex) throw new TRPCError({ code: 'NOT_FOUND', message: `No task with id ${id} was found.`})
     this.tasks.splice(findIndex, 1);
   };
 }
