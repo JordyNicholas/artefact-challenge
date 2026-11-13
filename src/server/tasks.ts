@@ -24,7 +24,7 @@ class TaskService {
   constructor () {}
 
   public async getTask (id: string): Promise<Task> {
-    const mappedTask = await this.tasks.find((task: Task) => task.id === id);
+    const mappedTask = this.tasks.find((task: Task) => task.id === id);
     if (!mappedTask) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
     return mappedTask;
   };
@@ -35,7 +35,7 @@ class TaskService {
 
   public async createTask (input: TaskParams): Promise<Task> {
     const findDuplicate = this.tasks.find((task: Task) => task.titulo === input.titulo)
-    if (findDuplicate) throw new TRPCError({ code: 'NOT_FOUND', message: `A task with title ${input.titulo} already exists.`})
+    if (findDuplicate) throw new TRPCError({ code: 'CONFLICT', message: `A task with title ${input.titulo} already exists.`})
 
     const task = {
       id: randomUUID(),
@@ -50,20 +50,20 @@ class TaskService {
 
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
     const index = this.tasks.findIndex((task: Task) => task.id === id);
-    if (!index) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
+    if (index === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
 
     const mappedTask = this.tasks[index];
     return this.tasks[index] = {
       ...mappedTask,
-      titulo: input.titulo ?? mappedTask.titulo,
-      descricao: input.descricao?.length ? input.descricao : mappedTask.descricao,
+      titulo: input.titulo,
+      descricao: input.descricao,
       dataAtualizacao: new Date().toISOString()
     }
   };
 
   public async deleteTask (id: string): Promise<void> {
     const findIndex = this.tasks.findIndex((task: Task) => task.id === id)
-    if (!findIndex) throw new TRPCError({ code: 'NOT_FOUND', message: `No task with id ${id} was found.`})
+    if (findIndex === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `No task with id ${id} was found.`})
     this.tasks.splice(findIndex, 1);
   };
 }
