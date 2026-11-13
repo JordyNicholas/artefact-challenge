@@ -6,7 +6,7 @@ import { TRPCError } from "@trpc/server";
 export const taskSchema = z.object({
   id: z.uuid(),
   titulo: z.string().trim().min(1, 'Title is required.'),
-  descricao: z.string().optional(),
+  descricao: z.string().trim().optional(),
   dataCriacao: z.iso.datetime(),
   dataAtualizacao: z.iso.datetime().optional()
 })
@@ -56,7 +56,7 @@ class TaskService {
     return this.tasks[index] = {
       ...mappedTask,
       titulo: input.titulo ?? mappedTask.titulo,
-      descricao: input.descricao ?? mappedTask.descricao,
+      descricao: input.descricao?.length ? input.descricao : mappedTask.descricao,
       dataAtualizacao: new Date().toISOString()
     }
   };
