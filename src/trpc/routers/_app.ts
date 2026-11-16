@@ -1,7 +1,11 @@
 import { taskParams, taskService } from "@/server/tasks";
 import { baseProcedure, createTRPCRouter } from "../init";
 import { z } from "zod";
+import { seedTasks } from "@/server/seed";
 
+if (process.env.NODE_ENV === 'development' && taskService.size === 0) {
+  void seedTasks();
+}
 
 export const appRouter = createTRPCRouter({
   task: createTRPCRouter({

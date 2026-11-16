@@ -83,6 +83,10 @@ class TaskService {
 
     return index
   }
+
+  public get size(): number {
+    return this.tasks.length;
+  }
 }
 
 export const taskService = new TaskService()
