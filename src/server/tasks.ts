@@ -18,7 +18,7 @@ export const taskParams = taskSchema.pick({
 })
 export type TaskParams = z.infer<typeof taskParams>
 
-
+// In-memory store (singleton): data lives only while the server runs.
 class TaskService {
   private tasks: Task[] = []
   constructor () {}
@@ -67,6 +67,7 @@ class TaskService {
     this.tasks.splice(index, 1);
   };
 
+  // Ignores the task's own id so editing without changing the title is allowed.
   private assertUniqueTitle (title: string, id?: string): void {
     const duplicate = this.tasks.find((task) => task.id !== id && task.titulo.toLowerCase() === title.toLowerCase());
     if (duplicate) {

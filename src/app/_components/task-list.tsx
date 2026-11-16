@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Toast = { type: 'success' | 'error'; message: string } | null;
 
+// pathKey invalidates every cached variant of task.list.
 export function TaskList() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ export function TaskList() {
     ));
   const tasks = data?.pages.flatMap((page) => page.items) ?? [];
 
+  // Loads the next page when the sentinel at the end of the list becomes visible.
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

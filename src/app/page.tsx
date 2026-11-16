@@ -2,7 +2,7 @@ import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
 import { TaskList } from "./_components/task-list";
 import Link from "next/link";
 
-
+// Prefetches the first page on the server so the list comes in the initial HTML (SSR).
 export default function Home() {
 
   void getQueryClient()

@@ -33,6 +33,7 @@ export function TaskForm({ task }: Props) {
   const serverFieldErrors = mutation.error?.data?.zodError?.fieldErrors;
   const serverError = mutation.error && !serverFieldErrors ? mutation.error.message : null;
 
+  // Client check for quick feedback; the server is still the source of truth.
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setSuccess(null);

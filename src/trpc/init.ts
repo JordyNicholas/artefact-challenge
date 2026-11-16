@@ -6,6 +6,7 @@ import { z, ZodError } from "zod";
 export const createTRPCContext = cache(async () => ({}));
 
 const t = initTRPC.create({
+  // Sends Zod field errors to the client so the form can show them per field.
   errorFormatter({ shape, error}){
     return {
       ...shape,

@@ -3,8 +3,8 @@ import { taskService } from "./tasks";
 const verbs = ['Review', 'Write', 'Fix', 'Plan', 'Update', 'Test', 'Refactor', 'Prepare'];
 const subjects = ['login page', 'monthly report', 'API docs', 'onboarding flow', 'sprint board', 'payment form', 'release notes', 'user settings'];
 const details = [
-  'Check the edge cases before merging',
-  'Align with the teams on the next steps',
+  'Check the edge cases before merging.',
+  'Align with the team on the next steps.',
   'Keep it short and simple.',
   'Due by the end of the week.'
 ];

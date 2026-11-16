@@ -3,10 +3,12 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { z } from "zod";
 import { seedTasks } from "@/server/seed";
 
+// Dev only: fills the store with fictitious tasks for manual testing.
 if (process.env.NODE_ENV === 'development' && taskService.size === 0) {
   void seedTasks();
 }
 
+// Thin router: validates input with Zod and delegates to TaskService.
 export const appRouter = createTRPCRouter({
   task: createTRPCRouter({
     list: baseProcedure
