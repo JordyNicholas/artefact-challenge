@@ -5,7 +5,11 @@ import { TaskList } from "./_components/task-list";
 export default function Home() {
 
   void getQueryClient()
-    .infiniteQuery(trpc.task.list.infiniteQueryOptions({ limit: 10 }))
+    .infiniteQuery(
+      trpc.task.list.infiniteQueryOptions(
+        { limit: 10 },
+        { getNextPageParam: (lastPage) => lastPage.nextCursor }
+      ))
     .catch(() => {})
 
   return (

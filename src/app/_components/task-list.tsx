@@ -23,7 +23,7 @@ export function TaskList() {
 
   useEffect(() => {
     const el = sentinelRef.current;
-    if (!el || hasNextPage) return;
+    if (!el || !hasNextPage) return;
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !isFetchingNextPage) fetchNextPage();
@@ -34,7 +34,7 @@ export function TaskList() {
 
   const deleteTask = useMutation(trpc.task.delete.mutationOptions({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: trpc.task.list.queryKey() });
+      queryClient.invalidateQueries({ queryKey: trpc.task.list.pathKey() });
       setToast({ type: 'success', message: 'Task deleted successfully.' });
     },
     onError: (error) => {

@@ -18,7 +18,7 @@ export function TaskForm({ task }: Props) {
   const [success, setSuccess] = useState<string | null>(null);
 
   const onSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: trpc.task.list.queryKey() });
+    queryClient.invalidateQueries({ queryKey: trpc.task.list.pathKey() });
     setSuccess(isEdit ? 'Changes saved.' : 'Task created.');
     if (!isEdit) {
       setTitulo('');
