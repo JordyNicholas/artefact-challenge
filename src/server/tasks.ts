@@ -1,4 +1,4 @@
-import { input, z } from "zod";
+import { z } from "zod";
 import { randomUUID } from 'crypto';
 import { TRPCError } from "@trpc/server";
 
@@ -24,9 +24,8 @@ class TaskService {
   constructor () {}
 
   public async getTask (id: string): Promise<Task> {
-    const mappedTask = this.tasks.find((task: Task) => task.id === id);
-    if (!mappedTask) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
-    return mappedTask;
+    const index = this.getTaskIndex(id);
+    return this.tasks[index];
   };
 
   public async listTasks (): Promise<Task[]> {
@@ -48,11 +47,10 @@ class TaskService {
   };
 
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
+    const index = this.getTaskIndex(id);
     this.assertUniqueTitle(input.titulo, id)
 
-    const index = this.assertTaskExists(id);
     const mappedTask = this.tasks[index];
-
     return this.tasks[index] = {
       ...mappedTask,
       titulo: input.titulo,
@@ -62,7 +60,7 @@ class TaskService {
   };
 
   public async deleteTask (id: string): Promise<void> {
-    const index = this.assertTaskExists(id);
+    const index = this.getTaskIndex(id);
     this.tasks.splice(index, 1);
   };
 
@@ -76,7 +74,7 @@ class TaskService {
     }
   }
 
-  private assertTaskExists (id: string): number {
+  private getTaskIndex (id: string): number {
     const index = this.tasks.findIndex((task: Task) => task.id === id);
     if (index === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
 
