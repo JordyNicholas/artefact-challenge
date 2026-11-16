@@ -47,47 +47,74 @@ export function TaskForm({ task }: Props) {
     if (isEdit) update.mutate({ id: task.id, ...data });
     else create.mutate(data);
   }
-
+  const titleMessage = titleError ?? serverFieldErrors?.titulo?.[0];
   return (
     <>
-      <h1 className="mb-6 text-2xl font-semibold">{ isEdit ? 'Edit task' : 'New Task' }</h1>
+      <h1 className="mb-6 text-2xl font-semibold">
+        { isEdit ? 'Edit task' : 'New Task' }
+      </h1>
+
       <form
         className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
         onSubmit={handleSubmit}
         noValidate
       >
-        <label
-          className="block text-sm font-medium mb-1"
-          htmlFor="titulo"
-        >
-          Title
-        </label>
-        <input
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          id="titulo"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-        />
-        {(titleError ?? serverFieldErrors?.titulo?.[0]) && (
-          <p>{titleError ?? serverFieldErrors?.titulo?.[0]}</p>
-        )}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="titulo">Title</label>
+          <input
+            className={
+              `w-full rounded-lg border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500
+              ${titleMessage ? 'border-red-500' : 'border-zinc-300'}`
+            }
+            id="titulo"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+          />
+          {titleMessage && <p className="mt-1 text-sm text-red-600">{titleMessage}</p>}
+          {(titleError ?? serverFieldErrors?.titulo?.[0]) && (
+            <p>{titleError ?? serverFieldErrors?.titulo?.[0]}</p>
+          )}
+        </div>
 
-        <label htmlFor="descricao">Description</label>
-        <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="descricao">Description</label>
+          <textarea
+            id="descricao"
+            rows={4}
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+          />
+        </div>
 
-        { serverError && <p role="alert"> {serverError} </p> }
-        { success && <p role="status"> {success} </p> }
+        { serverError && <p
+            role="alert"
+            className="rounded-lg bg-red-50 p-3 text-sm text-red-700"
+          >
+            {serverError}
+        </p>}
+        { success && <p
+            role="status"
+            className="rounded-lg bg-green-50 p-3 text-sm text-green-700"
+          >
+            {success}
+        </p>}
 
-        <button type="submit" disabled={mutation.isPending}>
-          {
-            mutation.isPending
-            ? 'Saving...'
-            : isEdit
-              ? 'Save changes'
-              : 'Create task'
-          }
-        </button>
-        <Link href='/'>Back to tasks</Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href='/'
+            className="text-sm text-zinc-600 hover:underline"
+          >
+            Back to tasks
+          </Link>
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            { mutation.isPending ? 'Saving...' : isEdit ? 'Save changes' : 'Create task' }
+          </button>
+        </div>
       </form>
     </>
   );
