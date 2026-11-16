@@ -53,17 +53,35 @@ export function TaskList() {
     deleteTask.mutate({ id });
   }
 
-  if (isPending) return <p>Loading...</p>
-  if (isError) return <p>{error.message}</p>
+  if (isPending) return (
+    <ul className="space-y-3">
+      {[1, 2, 3].map((i) => (
+        <li
+          key={i}
+          className="h-24 animate-pulse rounded-x1 bg-zinc-200"
+        />
+      ))}
+    </ul>
+  )
+
+  if (isError) return (
+    <p className="rounded-lg bg-red-50 p-4 text-red-700">
+      {error.message}
+    </p>
+  )
 
   return (
     <>
     { !tasks.length
-      ? ( <p>No tasks yet</p>)
+      ? (
+        <p
+          className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500">
+            No tasks yet
+        </p>)
       : (
         <ul className="space-y-3">
         { tasks.map((task) => (
-          <li key={ task.id } className="rounded-x1 border border-zinc-200 bg-white p-4 shadow-sm">
+          <li key={ task.id } className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
 
           <h2 className="font-medium"> { task.titulo } </h2>
 
@@ -77,7 +95,7 @@ export function TaskList() {
 
           <div className="mt-3 flex gap-3 text-sm">
             <Link
-              className="text-indigo-500 hover:underline"
+              className="text-indigo-600 hover:underline"
               href={`/tasks/${task.id}/edit`}
               >
                 Edit
@@ -101,7 +119,7 @@ export function TaskList() {
 
       <div ref={sentinelRef} />
       { isFetchingNextPage &&
-        <p className="rounded-x1 border border-dashed border-zinc-300 p-8 text-center text-zinc-500">
+        <p className="py-4 text-center text-sm text-zinc-500">
           Loading more...
         </p>
       }
@@ -109,7 +127,10 @@ export function TaskList() {
       { toast && (
         <div
           role="status"
-          className="fixed bottom-4 right-4 rounded-lg px-4 py-2 text-sm text-white shadow-lg"
+          className={
+            `fixed bottom-4 right-4 rounded-lg px-4 py-2 text-sm text-white shadow-lg
+            ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}
+          `}
         >
           {toast.message}
         </div>

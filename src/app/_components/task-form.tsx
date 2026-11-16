@@ -50,9 +50,9 @@ export function TaskForm({ task }: Props) {
 
   return (
     <>
-      <h1 className="mb-6 text-2x1 font-semibold">{ isEdit ? 'Edit task' : 'New Task' }</h1>
+      <h1 className="mb-6 text-2xl font-semibold">{ isEdit ? 'Edit task' : 'New Task' }</h1>
       <form
-        className="space-y-4 rounded-x1 border border-zinc-200 bg-white p-6 shadow-sm"
+        className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
         onSubmit={handleSubmit}
         noValidate
       >
