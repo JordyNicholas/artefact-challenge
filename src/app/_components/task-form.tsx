@@ -1,7 +1,9 @@
+'use client'
+
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState, SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 
 type Props = { task?: { id: string, titulo: string, descricao?: string }};
 
@@ -11,7 +13,7 @@ export function TaskForm({ task }: Props) {
   const isEdit = !!task;
 
   const [titulo, setTitulo] = useState<string>(task?.titulo ?? '');
-  const [descricao, setDescricao] = useState<string>(task?.titulo ?? '');
+  const [descricao, setDescricao] = useState<string>(task?.descricao ?? '');
   const [titleError, setTitleError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -41,7 +43,7 @@ export function TaskForm({ task }: Props) {
     }
     setTitleError(null);
 
-    const data = { titulo, descricao: descricao ?? undefined };
+    const data = { titulo, descricao: descricao || undefined };
     if (isEdit) update.mutate({ id: task.id, ...data });
     else create.mutate(data);
   }
