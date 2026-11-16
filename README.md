@@ -1,39 +1,60 @@
-# ArtefactChallenge
-Artefact Software Engineer challenge
+# Task Manager - Artefact Challenge
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A simple task manager built with Next.js 15 and tRPC for the Artefact Software Engineer case. Tasks are stored in memory, so there is no database to set up.
 
-## Getting Started
+## Stack
 
-First, run the development server:
+- Next.js 15 (App Router)
+- tRPC v11 with TanStack Query
+- Zod for validation
+- Tailwind CSS 4
+- TypeScript
+
+## How to run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000). No environment variables or database are needed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Create, list, edit and delete tasks (title, optional description, creation date)
+- Validation on the client and on the server, with field-level error messages
+- Meaningful errors: duplicate titles return `CONFLICT`, unknown ids return `NOT_FOUND`
+- Task list rendered on the server (SSR) and hydrated on the client
+- Infinite scroll (10 tasks per page)
+- Loading, success and error states, plus a toast after deleting a task
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  server/tasks.ts        In-memory task service (business rules)
+  trpc/                  tRPC setup: init, routers, client and server helpers
+  app/page.tsx           Task list page (SSR)
+  app/tasks/new          Create task page
+  app/tasks/[id]/edit    Edit task page
+  app/_components        Task list and task form (client components)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Technical decisions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **In-memory service as a singleton.** `TaskService` keeps the tasks in an array and holds the business rules (unique title, not found). The tRPC router stays thin: it validates the input with Zod and calls the service.
+- **Validation on both sides.** The form checks the title before sending, for quick feedback. The server is the source of truth: Zod validates every input, and the `errorFormatter` sends field errors back so the form can show them.
+- **SSR with prefetch.** The home page prefetches the first page of tasks on the server and passes it to the client with `HydrateClient`, so the list is already in the HTML on first load.
+- **Offset cursor pagination.** `task.list` returns `items` and `nextCursor`. The client uses `useInfiniteQuery` and an `IntersectionObserver` to load the next page when the user reaches the end of the list.
+- **Cache invalidation.** After create, update or delete, the app invalidates `task.list` with `pathKey()`, so every cached version of the list is refreshed.
 
-## Deploy on Vercel
+## Limitations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Data is lost when the server restarts, since it only lives in memory.
+- No authentication.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Possible improvements
+
+- Persist tasks in a database
+- Dark mode
+- Automated tests
