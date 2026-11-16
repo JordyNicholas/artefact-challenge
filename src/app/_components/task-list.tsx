@@ -61,33 +61,57 @@ export function TaskList() {
     { !tasks.length
       ? ( <p>No tasks yet</p>)
       : (
-        <ul>
+        <ul className="space-y-3">
         { tasks.map((task) => (
-          <li key={ task.id }>
-          <h2>{ task.titulo }</h2>
-          { task.descricao && <p>{task.descricao}</p> }
-          <time>{ new Date(task.dataCriacao).toLocaleDateString('en-US') }</time>
-          <Link href={`/tasks/${task.id}/edit`}>Edit</Link>
-          <button
-            onClick={() => handleDelete(task.id)}
-            disabled={deleteTask.isPending && deleteTask.variables?.id === task.id}
-          >
-          { deleteTask.isPending && deleteTask.variables?.id === task.id
-            ? 'Deleting...'
-            : 'Delete'
-          }
-          </button>
+          <li key={ task.id } className="rounded-x1 border border-zinc-200 bg-white p-4 shadow-sm">
+
+          <h2 className="font-medium"> { task.titulo } </h2>
+
+          { task.descricao && <p className="mt-1 text-sm text-zinc-600">
+            {task.descricao}
+          </p> }
+
+          <time className="mt-2 block text-xs text-zinc-400">
+            { new Date(task.dataCriacao).toLocaleDateString('en-US') }
+          </time>
+
+          <div className="mt-3 flex gap-3 text-sm">
+            <Link
+              className="text-indigo-500 hover:underline"
+              href={`/tasks/${task.id}/edit`}
+              >
+                Edit
+            </Link>
+            <button
+              className="text-red-600 hover:underline disabled:opacity-50"
+              onClick={() => handleDelete(task.id)}
+              disabled={deleteTask.isPending && deleteTask.variables?.id === task.id}
+            >
+            { deleteTask.isPending && deleteTask.variables?.id === task.id
+              ? 'Deleting...'
+              : 'Delete'
+            }
+            </button>
+          </div>
+
           </li>
         ))}
         </ul>
       )}
 
       <div ref={sentinelRef} />
-      { isFetchingNextPage && <p>Loading more...</p> }
+      { isFetchingNextPage &&
+        <p className="rounded-x1 border border-dashed border-zinc-300 p-8 text-center text-zinc-500">
+          Loading more...
+        </p>
+      }
 
       { toast && (
-        <div role="status" className="fixed bottom-4 right-4">
-        {toast.message}
+        <div
+          role="status"
+          className="fixed bottom-4 right-4 rounded-lg px-4 py-2 text-sm text-white shadow-lg"
+        >
+          {toast.message}
         </div>
       )}
       </>

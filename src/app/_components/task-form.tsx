@@ -49,29 +49,46 @@ export function TaskForm({ task }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <label htmlFor="titulo">Title</label>
-      <input id="titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
-      {(titleError ?? serverFieldErrors?.titulo?.[0]) && (
-        <p>{titleError ?? serverFieldErrors?.titulo?.[0]}</p>
-      )}
+    <>
+      <h1 className="mb-6 text-2x1 font-semibold">{ isEdit ? 'Edit task' : 'New Task' }</h1>
+      <form
+        className="space-y-4 rounded-x1 border border-zinc-200 bg-white p-6 shadow-sm"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <label
+          className="block text-sm font-medium mb-1"
+          htmlFor="titulo"
+        >
+          Title
+        </label>
+        <input
+          className="w-full rounded-lg border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          id="titulo"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+        />
+        {(titleError ?? serverFieldErrors?.titulo?.[0]) && (
+          <p>{titleError ?? serverFieldErrors?.titulo?.[0]}</p>
+        )}
 
-      <label htmlFor="descricao">Description</label>
-      <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+        <label htmlFor="descricao">Description</label>
+        <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
 
-      { serverError && <p role="alert"> {serverError} </p> }
-      { success && <p role="status"> {success} </p> }
+        { serverError && <p role="alert"> {serverError} </p> }
+        { success && <p role="status"> {success} </p> }
 
-      <button type="submit" disabled={mutation.isPending}>
-        {
-          mutation.isPending
-          ? 'Saving...'
-          : isEdit
-            ? 'Save changes'
-            : 'Create task'
-        }
-      </button>
-      <Link href='/'>Back to tasks</Link>
-    </form>
+        <button type="submit" disabled={mutation.isPending}>
+          {
+            mutation.isPending
+            ? 'Saving...'
+            : isEdit
+              ? 'Save changes'
+              : 'Create task'
+          }
+        </button>
+        <Link href='/'>Back to tasks</Link>
+      </form>
+    </>
   );
 }
