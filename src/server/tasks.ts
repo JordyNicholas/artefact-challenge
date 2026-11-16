@@ -28,8 +28,11 @@ class TaskService {
     return this.tasks[index];
   };
 
-  public async listTasks (): Promise<Task[]> {
-    return this.tasks;
+  public async listTasks (cursor: number = 0, limit: number = 10): Promise<{ items: Task[], nextCursor: number | null}> {
+    const items = this.tasks.slice(cursor, cursor + limit);
+    const next = cursor + limit;
+    const nextCursor = next < this.tasks.length ? next : null;
+    return { items, nextCursor }
   };
 
   public async createTask (input: TaskParams): Promise<Task> {

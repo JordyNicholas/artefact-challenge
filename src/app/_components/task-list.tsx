@@ -1,9 +1,9 @@
 'use client'
 
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Toast = { type: 'success' | 'error'; message: string } | null;
 
@@ -12,7 +12,25 @@ export function TaskList() {
   const queryClient = useQueryClient();
   const [toast, setToast] = useState<Toast>(null);
 
-  const { data: tasks, isPending, isError, error } = useQuery(trpc.task.list.queryOptions());
+  const { data, isPending, isError, error, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery(
+    trpc.task.list.infiniteQueryOptions(
+      { limit: 10 },
+      { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    ));
+  const tasks = data?.pages.flatMap((page) => page.items) ?? [];
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || hasNextPage) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !isFetchingNextPage) fetchNextPage();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const deleteTask = useMutation(trpc.task.delete.mutationOptions({
     onSuccess: () => {
@@ -63,6 +81,10 @@ export function TaskList() {
         ))}
         </ul>
       )}
+
+      <div ref={sentinelRef} />
+      { isFetchingNextPage && <p>Loading more...</p> }
+
       { toast && (
         <div role="status" className="fixed bottom-4 right-4">
         {toast.message}

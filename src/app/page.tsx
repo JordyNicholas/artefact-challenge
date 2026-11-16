@@ -5,7 +5,7 @@ import { TaskList } from "./_components/task-list";
 export default function Home() {
 
   void getQueryClient()
-    .query(trpc.task.list.queryOptions())
+    .infiniteQuery(trpc.task.list.infiniteQueryOptions({ limit: 10 }))
     .catch(() => {})
 
   return (
