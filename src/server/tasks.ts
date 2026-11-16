@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { input, z } from "zod";
 import { randomUUID } from 'crypto';
 import { TRPCError } from "@trpc/server";
 
@@ -34,8 +34,7 @@ class TaskService {
   };
 
   public async createTask (input: TaskParams): Promise<Task> {
-    const findDuplicate = this.tasks.find((task: Task) => task.titulo.toLowerCase() === input.titulo.toLowerCase())
-    if (findDuplicate) throw new TRPCError({ code: 'CONFLICT', message: `A task with title ${input.titulo} already exists.`})
+    this.assertUniqueTitle(input.titulo)
 
     const task = {
       id: randomUUID(),
@@ -49,11 +48,11 @@ class TaskService {
   };
 
   public async updateTask (id: string, input: TaskParams): Promise<Task> {
-    const index = this.tasks.findIndex((task: Task) => task.id === id);
-    if (index === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
+    this.assertUniqueTitle(input.titulo, id)
+
+    const index = this.assertTaskExists(id);
     const mappedTask = this.tasks[index];
 
-    if (mappedTask.titulo.toLowerCase() === input.titulo.toLowerCase()) throw new TRPCError({ code: 'CONFLICT', message: `A Task with title ${input.titulo} already exists.` })
     return this.tasks[index] = {
       ...mappedTask,
       titulo: input.titulo,
@@ -63,10 +62,26 @@ class TaskService {
   };
 
   public async deleteTask (id: string): Promise<void> {
-    const findIndex = this.tasks.findIndex((task: Task) => task.id === id)
-    if (findIndex === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `No task with id ${id} was found.`})
-    this.tasks.splice(findIndex, 1);
+    const index = this.assertTaskExists(id);
+    this.tasks.splice(index, 1);
   };
+
+  private assertUniqueTitle (title: string, id?: string): void {
+    const duplicate = this.tasks.find((task) => task.id !== id && task.titulo.toLowerCase() === title.toLowerCase());
+    if (duplicate) {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: `A task with title ${title} already exists.`
+      })
+    }
+  }
+
+  private assertTaskExists (id: string): number {
+    const index = this.tasks.findIndex((task: Task) => task.id === id);
+    if (index === -1) throw new TRPCError({ code: 'NOT_FOUND', message: `Task ${id} not found.` })
+
+    return index
+  }
 }
 
 export const taskService = new TaskService()

@@ -1,6 +1,5 @@
 'use client'
 
-import { Task } from "@/server/tasks";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -45,12 +44,12 @@ export function TaskList() {
       ? ( <p>No tasks yet</p>)
       : (
         <ul>
-        { tasks.map((task: Task) => (
+        { tasks.map((task) => (
           <li key={ task.id }>
           <h2>{ task.titulo }</h2>
           { task.descricao && <p>{task.descricao}</p> }
           <time>{ new Date(task.dataCriacao).toLocaleDateString('en-US') }</time>
-          <Link href={`tasks/${task.id}/edit`}>Edit</Link>
+          <Link href={`/tasks/${task.id}/edit`}>Edit</Link>
           <button
             onClick={() => handleDelete(task.id)}
             disabled={deleteTask.isPending && deleteTask.variables?.id === task.id}
