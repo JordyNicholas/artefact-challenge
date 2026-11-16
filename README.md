@@ -28,6 +28,13 @@ Then open [http://localhost:3000](http://localhost:3000). No environment variabl
 - Infinite scroll (10 tasks per page)
 - Loading, success and error states, plus a toast after deleting a task
 
+## How it works
+
+1. The browser calls tRPC procedures through the route handler under `src/app/api/trpc`.
+2. Each procedure validates the input with Zod and calls `TaskService`.
+3. `TaskService` applies the business rules and reads or writes the in-memory array.
+4. Errors are thrown as `TRPCError` (`NOT_FOUND`, `CONFLICT`) and shown in the UI.
+
 ## Project structure
 
 ```
