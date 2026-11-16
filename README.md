@@ -18,6 +18,7 @@ npm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000). No environment variables or database are needed.
+In development, the list is seeded with 25 sample tasks.
 
 ## Features
 
@@ -40,6 +41,7 @@ Then open [http://localhost:3000](http://localhost:3000). No environment variabl
 ```
 src/
   server/tasks.ts        In-memory task service (business rules)
+  server/seed.ts         Generates 25 seed tasks (only in dev environment)
   trpc/                  tRPC setup: init, routers, client and server helpers
   app/page.tsx           Task list page (SSR)
   app/tasks/new          Create task page
