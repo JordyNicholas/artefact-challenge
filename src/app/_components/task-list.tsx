@@ -58,7 +58,7 @@ export function TaskList() {
       {[1, 2, 3].map((i) => (
         <li
           key={i}
-          className="h-24 animate-pulse rounded-x1 bg-zinc-200"
+          className="h-24 animate-pulse rounded-xl bg-zinc-200"
         />
       ))}
     </ul>

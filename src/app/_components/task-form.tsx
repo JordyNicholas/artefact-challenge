@@ -51,7 +51,7 @@ export function TaskForm({ task }: Props) {
   return (
     <>
       <h1 className="mb-6 text-2xl font-semibold">
-        { isEdit ? 'Edit task' : 'New Task' }
+        { isEdit ? 'Edit Task' : 'New Task' }
       </h1>
 
       <form
@@ -63,7 +63,7 @@ export function TaskForm({ task }: Props) {
           <label className="block text-sm font-medium mb-1" htmlFor="titulo">Title</label>
           <input
             className={
-              `w-full rounded-lg border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500
+              `w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500
               ${titleMessage ? 'border-red-500' : 'border-zinc-300'}`
             }
             id="titulo"
@@ -71,9 +71,6 @@ export function TaskForm({ task }: Props) {
             onChange={(e) => setTitulo(e.target.value)}
           />
           {titleMessage && <p className="mt-1 text-sm text-red-600">{titleMessage}</p>}
-          {(titleError ?? serverFieldErrors?.titulo?.[0]) && (
-            <p>{titleError ?? serverFieldErrors?.titulo?.[0]}</p>
-          )}
         </div>
 
         <div>
